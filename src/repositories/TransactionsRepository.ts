@@ -18,11 +18,37 @@ class TransactionsRepository {
   }
 
   public getBalance(): Balance {
-    // TODO
+    const { income, outcome } = this.transactions.reduce(
+      (acumalator: Balance, transaction: Transaction) => {
+        switch (transaction.type) {
+          case 'income':
+            acumalator.income += transaction.value;
+            break;
+          case 'outcome':
+            acumalator.outcome += transaction.value;
+            break;
+          default:
+            break;
+        }
+        return acumalator;
+      },
+      {
+        income: 0,
+        outcome: 0,
+        total: 0,
+      },
+    );
+
+    const total = income - outcome;
+    return { income, outcome, total };
   }
 
-  public create(title: string, value: number, type: "income" | "outcome" ): Transaction {
-    const transaction = new Transaction({title, value, type});
+  public create(
+    title: string,
+    value: number,
+    type: 'income' | 'outcome',
+  ): Transaction {
+    const transaction = new Transaction({ title, value, type });
     this.transactions.push(transaction);
     return transaction;
   }

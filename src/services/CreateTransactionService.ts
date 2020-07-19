@@ -14,11 +14,12 @@ class CreateTransactionService {
   }
 
   public execute({ title, value, type }: Request): Transaction {
-    const transaction = this.transactionsRepository.create({
-      title,
-      value,
-      type,
-    });
+    const { total } = this.transactionsRepository.getBalance();
+    if (type === 'outcome' && total < value) {
+      throw new Error('Seu saldo é insufiente para realizar essa transação');
+    }
+    const transaction = this.transactionsRepository.create(title, value, type);
+    return transaction;
   }
 }
 
